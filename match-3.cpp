@@ -34,7 +34,6 @@ enum class Color {RED, GREEN, YELLOW, MAGENTA, CYAN, BLUE, WHITE, BOLDRED, BOLDG
 std::map <Color, int> colorMap;
 
 void createBoard();
-void showBoard();
 void myAlgorithm();
 void fillColorMap();
 void showRemoved(std::vector< std::pair<int,int> > removed);
@@ -50,7 +49,6 @@ int main()
 	fillColorMap();
 	srand (time(NULL));
 	createBoard();
-	showBoard();
 	myAlgorithm();
 	return 0;
 }
@@ -58,6 +56,16 @@ int main()
 //mają tabele 0 1
 //			  2 3
 // pisząc tabela[0][1] to element 1!, najpierw y, potem x!
+/*
+1. foreach element in table which is not visited:
+a) check in row (right/left):
+	- mark gem as visited
+	- check gems before this one (till other gem)
+	- check gems next one (till other gem)
+	- sum how many gems (right + left) are same
+	- if sum is greater or equal 3 we have match -> save to remove
+b) check in column similar as too row
+*/
 void myAlgorithm()
 {
 	std::vector<int> currentlyHorizontalMarked;
@@ -73,26 +81,17 @@ void myAlgorithm()
 				if (currentlyHorizontalMarked.size() >= 3)
 				{//we have horizontal match. We should check vertical for every horizontal matching gem and set to remove
 					for (int index : currentlyHorizontalMarked)
-					{
 						toRemove.push_back(std::make_pair(i, index));
-						currentlyVerticalMarked = checkVertical(i, index);
-						for (int vInd: currentlyVerticalMarked)
-						{
-							toRemove.push_back(std::make_pair(vInd, index));
-						}
-					}
 				}
 			}
-			//check other rows
+			//check columns
 			if (!BoardVerticalVisited[i][j])
 			{
 				currentlyVerticalMarked = checkVertical(i, j);
 				if (currentlyVerticalMarked.size() >= 3)
 				{
 					for (int vInd : currentlyVerticalMarked)
-					{
 						toRemove.push_back(std::make_pair(vInd, j));
-					}
 				}
 			}
 		}
@@ -166,26 +165,12 @@ void fillColorMap()
 	colorMap.insert(std::pair<Color, int>(Color::BLUE,34));					
 }
 
-void showBoard()
-{
-	for (int x = 0; x < BOARDSIZE; x++)
-	{
-		for (int y = 0; y < BOARDSIZE; y++)
-			std::cout << std::to_string(Board[x][y]) << " ";
-		std::cout << "\n";
-	}
-
-}
-
 void createBoard()
 {
 	for (int x = 0; x < BOARDSIZE; x++)
 	{
 		for (int y = 0; y < BOARDSIZE; y++)
-		{
 			Board[x][y] = rand() % 5 + 1;
-		}
-
 	}
 	std::cout<<"Board created\n";
 }
@@ -214,25 +199,3 @@ void showRemoved(std::vector< std::pair<int,int> > removed)
 		std::cout << "\n";
 	}
 }
-
-//the scanline flood fill algorithm
-// int checkMatch(int const x, int const y, int value)
-// {
-// 	if (oldColor == newColor) return -1;
-
-// 	std::stack<std::pair <int, int> > myStack;
-// 	myStack.push(std::make_pair(x, y));
-// 	while (!myStack.empty())
-// 	{
-// 		if (y < 0 || y > BOARDSIZE -1 }} x < 0 || x > BOARDSIZE -1)
-// 			continue;
-// 		if (Board[x][y] == value)
-// 		{
-
-// 			myStack.push(std::make_pair(x + 1, y));
-// 			myStack.push(std::make_pair(x - 1, y));
-// 			myStack.push(std::make_pair(x, y + 1));
-// 			myStack.push(std::make_pair(x, y - 1));
-// 		}
-// 	}
-// }
